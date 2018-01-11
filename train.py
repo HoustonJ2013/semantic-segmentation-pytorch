@@ -320,9 +320,9 @@ if __name__ == '__main__':
 
     # Path related arguments
     parser.add_argument('--list_train',
-                        default='./data/ADE20K_object150_train.txt')
+                        default='./data/ADE20K_object150_train_gray.txt')
     parser.add_argument('--list_val',
-                        default='./data/ADE20K_object150_val.txt')
+                        default='./data/ADE20K_object150_val_gray.txt')
     parser.add_argument('--root_img',
                         default='./data/ADEChallengeData2016/images')
     parser.add_argument('--root_seg',

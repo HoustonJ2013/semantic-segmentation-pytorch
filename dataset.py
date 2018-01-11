@@ -7,6 +7,7 @@ from torchvision import transforms
 from scipy.misc import imread, imresize
 
 
+
 class Dataset(torchdata.Dataset):
     def __init__(self, txt, opt, max_sample=-1, is_train=1):
         self.root_img = opt.root_img
