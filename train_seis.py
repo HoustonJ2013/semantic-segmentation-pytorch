@@ -12,9 +12,9 @@ from torch.autograd import Variable
 from scipy.io import loadmat
 from scipy.misc import imresize, imsave
 # Our libs
-from dataset import Dataset
+from dataset_seis import Dataset
 from models import ModelBuilder
-from utils import AverageMeter, colorEncode, accuracy
+from utils import AverageMeter, colorEncode, accuracy_seis
 
 import matplotlib
 matplotlib.use('Agg')
@@ -26,6 +26,7 @@ def forward_with_loss(nets, batch_data, args, is_train=True):
     (imgs, segs, infos) = batch_data
 
     # feed input data
+    #segs = torch.FloatTensor(segs)
     input_img = Variable(imgs, volatile=not is_train)
     label_seg = Variable(segs, volatile=not is_train)
     input_img = input_img.cuda()
@@ -105,7 +106,7 @@ def train(nets, loader, optimizers, history, epoch, args):
 
         # calculate accuracy, and display
         if i % args.disp_iter == 0:
-            acc, _ = accuracy(batch_data, pred)
+            acc, _ = accuracy_seis(batch_data, pred)
 
             print('Epoch: [{}][{}/{}], Time: {:.2f}, Data: {:.2f}, '
                   'lr_encoder: {}, lr_decoder: {}, '
@@ -137,7 +138,7 @@ def evaluate(nets, loader, history, epoch, args):
         print('[Eval] iter {}, loss: {}'.format(i, err.data[0]))
 
         # calculate accuracy
-        acc, pix = accuracy(batch_data, pred)
+        acc, pix = accuracy_seis(batch_data, pred)
         acc_meter.update(acc, pix)
 
         # visualization
@@ -247,11 +248,12 @@ def main(args):
                                         num_class=args.num_class,
                                         weights=args.weights_decoder)
 
-    crit = nn.NLLLoss2d(ignore_index=-1)
+#    crit = nn.NLLLoss2d(ignore_index=-1)
+    crit = nn.MSELoss()
 
     # Dataset and Loader
-    dataset_train = Dataset(args.list_train, args, is_train=1)
-    dataset_val = Dataset(args.list_val, args,
+    dataset_train = Dataset(args.list_train, args.list_train_seg, args, is_train=1)
+    dataset_val = Dataset(args.list_val, args.list_val_seg, args,
                           max_sample=args.num_val, is_train=0)
     loader_train = torch.utils.data.DataLoader(
         dataset_train,
@@ -320,13 +322,13 @@ if __name__ == '__main__':
 
     # Path related arguments
     parser.add_argument('--list_train',
-                        default='./data/ADE20K_object150_train_gray.txt')
+                        default='./data/ADE20K_object150_val_gray.txt')
+    parser.add_argument('--list_train_seg',
+                        default='./data/ADE20K_object150_val_gray.txt')
     parser.add_argument('--list_val',
                         default='./data/ADE20K_object150_val_gray.txt')
-    parser.add_argument('--root_img',
-                        default='./data/ADEChallengeData2016/images')
-    parser.add_argument('--root_seg',
-                        default='./data/ADEChallengeData2016/annotations')
+    parser.add_argument('--list_val_seg',
+                        default='./data/ADE20K_object150_val_gray.txt')
 
     # optimization related arguments
     parser.add_argument('--num_gpus', default=1, type=int,
@@ -350,7 +352,7 @@ if __name__ == '__main__':
     # Data related arguments
     parser.add_argument('--num_val', default=128, type=int,
                         help='number of images to evalutate')
-    parser.add_argument('--num_class', default=150, type=int,
+    parser.add_argument('--num_class', default=1, type=int,
                         help='number of classes')
     parser.add_argument('--workers', default=16, type=int,
                         help='number of data loading workers')
@@ -358,7 +360,7 @@ if __name__ == '__main__':
                         help='input image size')
     parser.add_argument('--segSize', default=384, type=int,
                         help='output image size')
-    parser.add_argument('--is_seis', default=False, type=bool,
+    parser.add_argument('--is_seis', default=True, type=bool,
                         help='is this a seismic image')
 
     # Misc arguments
