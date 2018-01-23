@@ -178,11 +178,11 @@ def evaluate(nets, loader, history, epoch, args):
         plt.close('all')
 
 
-def checkpoint(nets, history, args):
+def checkpoint(nets, history, epoch, args):
     print('Saving checkpoints...')
     (net_encoder, net_decoder, crit) = nets
-    suffix_latest = 'latest.pth'
-    suffix_best = 'best.pth'
+    suffix_latest = 'latest' + str(epoch) + '.pth'
+    suffix_best = 'best' + str(epoch) + '.pth'
 
     if args.num_gpus > 1:
         dict_encoder = net_encoder.module.state_dict()
@@ -296,7 +296,7 @@ def main(args):
             evaluate(nets, loader_val, history, epoch, args)
 
         # checkpointing
-        checkpoint(nets, history, args)
+        checkpoint(nets, history, epoch, args)
 
         # adjust learning rate
         adjust_learning_rate(optimizers, epoch, args)
