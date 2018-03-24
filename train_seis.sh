@@ -1,0 +1,2 @@
+python train_seis.py --id mitbaseline_train28ade_train_seis --arch_encoder resnet34_dilated8 --arch_decoder psp_bilinear --weights_encoder ckpt/baseline_resnet35_dilated8-psp_blinear_train_28/encoder_best.pth  --weights_decoder ckpt/baseline_resnet35_dilated8-psp_blinear_train_28/decoder_best.pth --batch_size_per_gpu 16 --num_epoch 5 --list_train data/train_seis_list --list_train_seg data/train_label_list --list_val data/val_seis_list --list_val_seg data/val_label_list
+

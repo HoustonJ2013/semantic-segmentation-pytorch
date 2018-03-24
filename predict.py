@@ -14,7 +14,11 @@ from scipy.ndimage import zoom
 from dataset import Dataset
 from models import ModelBuilder
 from utils import AverageMeter, colorEncode, accuracy, intersectionAndUnion
+<<<<<<< HEAD
 
+=======
+from torch.nn.modules.module import _addindent
+>>>>>>> 607f96b77148489a4fefbca6e4034ee57e5fa902
 
 # forward func for evaluation
 def forward_multiscale(nets, batch_data, args):
@@ -103,6 +107,7 @@ def predict(nets, loader, args):
 
         # calculate accuracy
         acc, pix = accuracy(batch_data, pred)
+<<<<<<< HEAD
         intersection, union, area_pred, area_lab, pred_img, segs_img = intersectionAndUnion(batch_data, pred,args.num_class)
         acc_meter.update(acc, pix)
         intersection_meter.update(intersection)
@@ -115,6 +120,13 @@ def predict(nets, loader, args):
         np.save("segs_img" + str(i), segs_img)
         
         
+=======
+        intersection, union = intersectionAndUnion(batch_data, pred,
+                                                   args.num_class)
+        acc_meter.update(acc, pix)
+        intersection_meter.update(intersection)
+        union_meter.update(union)
+>>>>>>> 607f96b77148489a4fefbca6e4034ee57e5fa902
         print('[{}] iter {}, loss: {}, accuracy: {}'
               .format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                       i, err.data[0], acc))
@@ -131,6 +143,36 @@ def predict(nets, loader, args):
           .format(loss_meter.average(), iou.mean(), acc_meter.average()*100))
 
 
+<<<<<<< HEAD
+=======
+def torch_summarize(model, show_weights=True, show_parameters=True):
+    """Summarizes torch model by showing trainable parameters and weights."""
+    tmpstr = model.__class__.__name__ + ' (\n'
+    for key, module in model._modules.items():
+        # if it contains layers let call it recursively to get params and weights
+        if type(module) in [
+            torch.nn.modules.container.Container,
+            torch.nn.modules.container.Sequential
+        ]:
+            modstr = torch_summarize(module)
+        else:
+            modstr = module.__repr__()
+        modstr = _addindent(modstr, 2)
+
+        params = sum([np.prod(p.size()) for p in module.parameters()])
+        weights = tuple([tuple(p.size()) for p in module.parameters()])
+
+        tmpstr += '  (' + key + '): ' + modstr
+        if show_weights:
+            tmpstr += ', weights={}'.format(weights)
+        if show_parameters:
+            tmpstr +=  ', parameters={}'.format(params)
+        tmpstr += '\n'
+
+    tmpstr = tmpstr + ')'
+    return tmpstr
+
+>>>>>>> 607f96b77148489a4fefbca6e4034ee57e5fa902
 def main(args):
     # Network Builders
     builder = ModelBuilder()
@@ -159,9 +201,17 @@ def main(args):
     for net in nets:
         net.cuda()
 
+<<<<<<< HEAD
     # Main loop
     predict(nets, loader_val, args)
 
+=======
+    print(torch_summarize(nets[0]))
+    print(torch_summarize(nets[1]))
+    print(torch_summarize(nets[2]))
+    # Main loop
+    predict(nets, loader_val, args)
+>>>>>>> 607f96b77148489a4fefbca6e4034ee57e5fa902
     print('Evaluation Done!')
 
 
@@ -194,9 +244,15 @@ if __name__ == '__main__':
                         help='number of classes')
     parser.add_argument('--batch_size', default=1, type=int,
                         help='batchsize')
+<<<<<<< HEAD
     parser.add_argument('--imgSize', default=500, type=int,
                         help='input image size, -1 = keep original')
     parser.add_argument('--segSize', default=500, type=int,
+=======
+    parser.add_argument('--imgSize', default=-1, type=int,
+                        help='input image size, -1 = keep original')
+    parser.add_argument('--segSize', default=-1, type=int,
+>>>>>>> 607f96b77148489a4fefbca6e4034ee57e5fa902
                         help='output image size, -1 = keep original')
 
     # Misc arguments
@@ -212,7 +268,11 @@ if __name__ == '__main__':
 
     # scales for evaluation
     # args.scales = (1, )
+<<<<<<< HEAD
     args.scales = (0.75, 1, 1.25)
+=======
+    args.scales = (0.5, 0.75, 1, 1.25, 1.5)
+>>>>>>> 607f96b77148489a4fefbca6e4034ee57e5fa902
 
     ## Handle memeory issue If image size > 1000, crop to 1000
 

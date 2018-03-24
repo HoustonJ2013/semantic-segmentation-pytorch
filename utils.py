@@ -100,6 +100,13 @@ def accuracy(batch_data, pred):
     acc = 1.0 * torch.sum(valid * (preds == segs)) / (torch.sum(valid) + 1e-10)
     return acc, torch.sum(valid)
 
+def accuracy_seis(batch_data, pred):
+    (imgs, segs, infos) = batch_data
+    preds = pred.data.cpu()
+    valid = (segs >= 0)
+    acc = 1.0 * torch.sum(valid * (preds == segs)) / (torch.sum(valid) + 1e-10)
+    return acc, torch.sum(valid)
+
 
 def intersectionAndUnion(batch_data, pred, numClass):
     (imgs, segs, infos) = batch_data
