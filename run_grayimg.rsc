@@ -1,0 +1,1 @@
+python train.py --id Grayscale1 --batch_size_per_gpu 8 --num_epoch 5 --list_train ./data/ADE20K_object150_train_gray1.txt 

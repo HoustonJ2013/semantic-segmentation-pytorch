@@ -125,4 +125,4 @@ def intersectionAndUnion(batch_data, pred, numClass):
                            min=0,
                            max=numClass-1)
     area_union = area_pred + area_lab - area_intersect
-    return area_intersect, area_union
+    return area_intersect, area_union, area_pred, area_lab, preds.float(), segs.float() 
